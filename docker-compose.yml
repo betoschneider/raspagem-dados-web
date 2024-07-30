@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    image: python:3.10.12
+    container_name: raspagem_container
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: python3 main.py
+    networks:
+      - app_network
+
+  cron:
+    image: python:3.10.12
+    container_name: raspagem_cron_container
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ./crontab:/etc/cron.d/crontab
+    command: /bin/sh -c "apt-get update && apt-get install -y cron && crond -f -L /dev/stdout"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
