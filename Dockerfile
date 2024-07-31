@@ -1,13 +1,12 @@
-FROM python:3.10.12
+FROM arm64v8/python:3.10.12
 
 # Instalar dependências necessárias
 RUN apt-get update && apt-get install -y wget unzip
+
+# Baixar e instalar o Chrome (se disponível para ARM64) e o chromedriver
 RUN wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
 RUN unzip chromedriver_linux64.zip -d /usr/local/bin/
 RUN chmod +x /usr/local/bin/chromedriver
-
-# Definir o ChromeDriver path
-ENV PATH /usr/local/bin/chromedriver:$PATH
 
 # Configurar o ambiente de trabalho
 WORKDIR /app
