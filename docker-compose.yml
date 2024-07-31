@@ -3,8 +3,8 @@ version: '3.8'
 services:
   app:
     image: selenium/standalone-chrome:latest
-    container_name: raspagem_container
     platform: linux/arm64
+    container_name: raspagem_container
     volumes:
       - .:/app
     working_dir: /app
