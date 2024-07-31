@@ -7,7 +7,8 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-    command: python3 main.py
+    command: /bin/sh -c "pip install --no-cache-dir -r requirements.txt && python3 main.py"
+    restart: always
     networks:
       - app_network
 
@@ -18,7 +19,8 @@ services:
     volumes:
       - .:/app
       - ./crontab:/etc/cron.d/crontab
-    command: /bin/sh -c "apt-get update && apt-get install -y cron && crond -f -L /dev/stdout"
+    command: /bin/sh -c "apt-get update && apt-get install -y cron && pip install --no-cache-dir -r requirements.txt && crond -f -L /dev/stdout"
+    restart: always
     networks:
       - app_network
 
