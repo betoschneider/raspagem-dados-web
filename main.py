@@ -1,7 +1,10 @@
+# from selenium import webdriver
+# from selenium.webdriver.chrome.service import Service
+# from webdriver_manager.chrome import ChromeDriverManager
+# from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-# from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import requests
 import time
@@ -15,12 +18,18 @@ url = 'http://192.168.1.10:5216/'
 # Parte 1: Leitura dos dados página web #
 #########################################
 
-# Configuração do Selenium WebDriver
-options = webdriver.ChromeOptions()
-options.add_argument("--headless")  # Executar em modo headless, sem interface gráfica
+# # Configuração do Selenium WebDriver
+# options = webdriver.ChromeOptions()
+# options.add_argument("--headless")  # Executar em modo headless, sem interface gráfica
 
-# Inicializando o WebDriver
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+# # Inicializando o WebDriver
+# driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+options = Options()
+options.add_argument("--headless")  # Executar em modo headless, sem interface gráfica
+options.binary_location = "/usr/bin/chromium"  # Localização do Chromium
+
+driver = webdriver.Chrome(service=Service("/usr/bin/chromedriver"), options=options)
 
 # Acessando a página
 driver.get(url)
