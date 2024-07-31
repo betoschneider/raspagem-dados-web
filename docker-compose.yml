@@ -2,24 +2,12 @@ version: '3.8'
 
 services:
   app:
-    image: python:3.10.12
+    image: selenium/standalone-chrome:latest
     container_name: raspagem_container
-    working_dir: /app
     volumes:
       - .:/app
-    command: /bin/sh -c "pip install --no-cache-dir -r requirements.txt && python3 main.py"
-    restart: always
-    networks:
-      - app_network
-
-  cron:
-    image: python:3.10.12
-    container_name: raspagem_cron_container
     working_dir: /app
-    volumes:
-      - .:/app
-      - ./crontab:/etc/cron.d/crontab
-    command: /bin/sh -c "apt-get update && apt-get install -y cron && pip install --no-cache-dir -r requirements.txt && crond -f -L /dev/stdout"
+    command: python3 main.py
     restart: always
     networks:
       - app_network
@@ -27,3 +15,4 @@ services:
 networks:
   app_network:
     driver: bridge
+

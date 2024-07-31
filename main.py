@@ -1,6 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
+# from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import requests
@@ -18,6 +18,8 @@ url = 'http://192.168.1.10:5216/'
 # Configuração do Selenium WebDriver
 options = webdriver.ChromeOptions()
 options.add_argument("--headless")  # Executar em modo headless, sem interface gráfica
+
+# Inicializando o WebDriver
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 # Acessando a página
