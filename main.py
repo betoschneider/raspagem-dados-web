@@ -26,8 +26,8 @@ url = 'http://192.168.1.10:5216/'
 # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 options = Options()
-options.add_argument("--headless")  # Executar em modo headless, sem interface gráfica
-options.binary_location = "/usr/bin/chromium"  # Localização do Chromium
+options.add_argument("--headless")
+options.binary_location = "/usr/bin/chromium"
 
 driver = webdriver.Chrome(service=Service("/usr/bin/chromedriver"), options=options)
 
