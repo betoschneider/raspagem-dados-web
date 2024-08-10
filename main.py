@@ -20,9 +20,6 @@ response = requests.get(url)
 if response.status_code == 200:
     # Parseando a resposta JSON
     data = response.json()
-    print(data['data'])
-    if data['data'] == None:
-        print('valor vazio')
 else:
     print(f"Erro na requisição: {response.status_code}")
 
