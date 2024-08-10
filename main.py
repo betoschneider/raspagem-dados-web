@@ -35,6 +35,8 @@ cursor = conn.cursor()
 tabela1 = 'speedtests'
 tabela2 = 'config'
 data = data['data']
+if data == None:
+    data = '2024-08-01'
 
 # Carregar o conteúdo da tabela em um DataFrame
 df = pd.read_sql_query(f"""
@@ -46,7 +48,7 @@ df = pd.read_sql_query(f"""
         ,upload
         ,type
     FROM {tabela1} t INNER JOIN {tabela2} c ON t.serverId = c.value
-    WHERE error IS NULL AND date(created) >=  date(coalesce('{data}', '2024-08-01'))
+    WHERE error IS NULL AND date(created) >=  date('{data}')
     """, 
     conn
 )
