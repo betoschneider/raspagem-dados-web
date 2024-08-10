@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import sqlite3
+from datetime import datetime
 
 # URL do site com a tabela
 url = 'http://192.168.1.10:5216/'
