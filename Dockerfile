@@ -10,5 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar o restante do código da aplicação
 COPY . .
 
-# Comando para rodar a aplicação
+# Comando padrão para rodar a aplicação
 CMD ["python3", "main.py"]
