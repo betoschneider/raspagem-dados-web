@@ -1,7 +1,6 @@
 import requests
 import pandas as pd
 import sqlite3
-from datetime import datetime
 
 # URL do site com a tabela
 url = 'http://192.168.1.10:5216/'
@@ -65,8 +64,10 @@ def send_data_to_api(df, api_url):
     for index, row in df.iterrows():
         # Preparar os dados para enviar
         data = {
-            'data': row['data'].strftime('%Y-%m-%d'),  # Formato da data: '2024-07-30'
-            'hora': row['hora'].strftime('%H:%M:%S'),  # Formato da hora: '17:37:00'
+            # 'data': row['data'].strftime('%Y-%m-%d'),  # Formato da data: '2024-07-30'
+            # 'hora': row['hora'].strftime('%H:%M:%S'),  # Formato da hora: '17:37:00'
+            'data': row['data'],
+            'hora': row['hora'],
             'server': row['server'],
             'ping': row['ping'],
             'download': row['download'],
