@@ -72,7 +72,7 @@ def send_data_to_api(df, api_url):
             'ping': row['ping'],
             'download': row['download'],
             'upload': row['upload'],
-            'tipo': row['tipo']
+            'tipo': row['type']
         }
         
         # Enviar os dados via POST
