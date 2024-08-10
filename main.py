@@ -1,12 +1,6 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-from bs4 import BeautifulSoup
 import requests
-import time
-from datetime import datetime
 import pandas as pd
+import sqlite3
 
 # URL do site com a tabela
 url = 'http://192.168.1.10:5216/'
@@ -15,87 +9,50 @@ url = 'http://192.168.1.10:5216/'
 # Parte 1: Leitura dos dados página web #
 #########################################
 
-# Configuração do Selenium WebDriver
-options = webdriver.ChromeOptions()
-options.add_argument("--headless")  # Executar em modo headless, sem interface gráfica
+# Busca a maior data na API
+# URL do endpoint
+url = "http://192.168.1.10:5000/max"
 
-# Inicializando o WebDriver
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+# Fazendo a requisição GET
+response = requests.get(url)
 
-# Acessando a página
-driver.get(url)
+# Verificando se a requisição foi bem-sucedida
+if response.status_code == 200:
+    # Parseando a resposta JSON
+    data = response.json()
+    print(data['data'])
+    if data['data'] == None:
+        print('valor vazio')
+else:
+    print(f"Erro na requisição: {response.status_code}")
 
-# Aguardar o carregamento do conteúdo dinâmico (ajuste o tempo conforme necessário)
-time.sleep(5)
 
-# Obter o conteúdo da página
-html_content = driver.page_source
+# Conectar ao banco de dados
+conn = sqlite3.connect('/DATA/AppData/myspeed/data/storage.db')
+cursor = conn.cursor()
 
-# Fechar o navegador
-driver.quit()
+# Nome da tabela que você deseja carregar
+tabela1 = 'speedtests'
+tabela2 = 'config'
+data = data['data']
 
-# Usar BeautifulSoup para parsear o HTML
-soup = BeautifulSoup(html_content, 'html.parser')
-
-# Encontrar elementos com base na nova estrutura HTML
-speedtest_areas = soup.find_all('div', class_='speedtest')
-
-#########################################
-#     Parte 2: Armazenar em lista       #
-#########################################
-
-# Definir a data atual
-current_date = datetime.now().strftime('%d/%m/%Y')
-
-# Lista para armazenar os registros
-registros = []
-
-# Iterar sobre os elementos e extrair os dados
-for area in speedtest_areas:
-    date = area.find('h2', class_='date-text')
-    if date:
-        date = date.get_text().replace('Às ', '')
-    else:
-        date = 'Data não encontrada'
-
-    rows = area.find_all('div', class_='speedtest-row')
-
-    taxa = {'0': 'ping', '1': 'download', '2': 'upload'}
-    n = 0
-    for row in rows:
-        speed = row.find('h2', class_='speedtest-text')
-        if speed:
-            speed = speed.get_text()
-        else:
-            speed = 'Velocidade não encontrada'
-        # Adicionar os dados à lista de registros
-        registros.append([current_date, date, speed, taxa[str(n)]])
-        n += 1
+# Carregar o conteúdo da tabela em um DataFrame
+df = pd.read_sql_query(f"""
+    SELECT date(created) AS data
+        ,time(created) AS hora 
+        ,c.key AS server
+        ,ping
+        ,download
+        ,upload
+        ,type
+    FROM {tabela1} t INNER JOIN {tabela2} c ON t.serverId = c.value
+    WHERE error IS NULL AND date(created) >=  date(coalesce('{data}', '2024-08-01'))
+    """, 
+    conn
+)
 
 #########################################
-#   Parte 3: Transformação dos dados    #
-#########################################
-
-# Transformando as linhas em colunas
-df = pd.DataFrame(registros, columns=['data', 'hora', 'valor', 'taxa'])
-
-# Converter tipo de dado das colunas
-df['data'] = pd.to_datetime(df['data'], format='%d/%m/%Y')
-df['hora'] = pd.to_datetime(df['hora'], format='%H:%M').dt.time
-df['valor'] = df['valor'].astype(float)
-
-# Pivotar o DataFrame
-df = df.pivot_table(index=['data', 'hora'], columns='taxa', values='valor', aggfunc='first').reset_index()
-
-# Ajustar os nomes das colunas
-df.columns.name = None
-df = df.rename_axis(None, axis=1)
-
-# Reordenar as colunas
-df = df[['data', 'hora', 'ping', 'download', 'upload']]
-
-#########################################
-#     Parte 4: Gravar na tabela bd      #
+#     Parte 2: Gravar na tabela bd      #
 #########################################
 
 # URL da API
@@ -109,9 +66,11 @@ def send_data_to_api(df, api_url):
         data = {
             'data': row['data'].strftime('%Y-%m-%d'),  # Formato da data: '2024-07-30'
             'hora': row['hora'].strftime('%H:%M:%S'),  # Formato da hora: '17:37:00'
+            'server': row['server'],
             'ping': row['ping'],
             'download': row['download'],
-            'upload': row['upload']
+            'upload': row['upload'],
+            'tipo': row['tipo']
         }
         
         # Enviar os dados via POST
