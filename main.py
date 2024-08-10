@@ -25,7 +25,7 @@ else:
 
 
 # Conectar ao banco de dados
-conn = sqlite3.connect('/DATA/AppData/myspeed/data/storage.db')
+conn = sqlite3.connect('/app/data/storage.db')
 cursor = conn.cursor()
 
 # Nome da tabela que você deseja carregar

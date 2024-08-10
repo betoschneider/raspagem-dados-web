@@ -6,6 +6,6 @@ services:
     container_name: select_myspeed_container
     restart: always # Isso reinicia o container automaticamente se ele falhar
     volumes:
-      - /caminho/para/o/sqlite.db:/DATA/AppData/myspeed/data/storage.db
+      - /DATA/AppData/myspeed/data/storage.db:/app/data/storage.db
     environment:
       - TZ=America/Sao_Paulo
