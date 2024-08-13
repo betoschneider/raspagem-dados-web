@@ -39,12 +39,12 @@ if data == None:
 df = pd.read_sql_query(f"""
     SELECT date(created) AS data
         ,time(created) AS hora 
-        ,c.key AS server
+        ,coalesce(c.key, 'cloudflare') AS server
         ,ping
         ,download
         ,upload
         ,type
-    FROM {tabela1} t INNER JOIN {tabela2} c ON t.serverId = c.value
+    FROM {tabela1} t LEFT JOIN {tabela2} c ON t.serverId = c.value
     WHERE error IS NULL AND date(created) >=  date('{data}')
     """, 
     conn
@@ -63,8 +63,6 @@ def send_data_to_api(df, api_url):
     for index, row in df.iterrows():
         # Preparar os dados para enviar
         data = {
-            # 'data': row['data'].strftime('%Y-%m-%d'),  # Formato da data: '2024-07-30'
-            # 'hora': row['hora'].strftime('%H:%M:%S'),  # Formato da hora: '17:37:00'
             'data': row['data'],
             'hora': row['hora'],
             'server': row['server'],
